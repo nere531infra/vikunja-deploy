@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  vikunja:
+    image: vikunja/vikunja
+    hostname: vikunja
+    container_name: vikunja__vikunja
+    restart: unless-stopped
+
+    environment:
+      VIKUNJA_SERVICE_JWTSECRET: ${JWT_SECRET}
+      VIKUNJA_SERVICE_PUBLICURL: ${VIKUNJA_PUBLIC_URL}
+      VIKUNJA_DATABASE_PATH: /db/vikunja.db
+
+    volumes:
+      - type: volume
+        source: vikunja_files
+        target: /app/vikunja/files
+      - type: volume
+        source: vikunja_db
+        target: /db
+
+    expose:
+      - 3456
+
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+    networks:
+      - outband
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.4.0
+    hostname: cloudflared
+    container_name: vikunja__cloudflared
+    restart: unless-stopped
+
+    environment:
+      TUNNEL_METRICS: 0.0.0.0:9126
+      TUNNEL_LOGFILE: /dev/stdout
+
+    command: tunnel run --token ${TUNNEL_TOKEN}
+
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+    networks:
+      - outband
+
+volumes:
+  vikunja_files:
+    name: vikunja__vikunja_files
+
+  vikunja_db:
+    name: vikunja__vikunja_db
+
+networks:
+  outband:
+    name: vikunja__outband

@@ -15,6 +15,7 @@ services:
       VIKUNJA_DATABASE_PASSWORD: vikunja
       VIKUNJA_DATABASE_DATABASE: vikunja
       VIKUNJA_DATABASE_HOST: postgres
+      VIKUNJA__SERVICE_ENABLEREGISTRATION: "false"
 
     volumes:
       - type: volume

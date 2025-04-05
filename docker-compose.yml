@@ -33,7 +33,7 @@ services:
       - outband
 
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
 
   postgres:
